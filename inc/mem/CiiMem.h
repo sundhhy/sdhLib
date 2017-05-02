@@ -1,7 +1,7 @@
 /* $Id: H:/drh/idioms/book/RCS/mem.doc,v 1.12 1997/10/27 23:08:05 drh Exp $ */
 #ifndef MEM_INCLUDED
 #define MEM_INCLUDED
-#include "except.h"
+#include "basis/except.h"
 extern const Except_T Mem_Failed;
 extern void *Mem_alloc (long nbytes,
 	const char *file, int line);

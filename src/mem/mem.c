@@ -2,8 +2,8 @@ static char rcsid[] = "$Id: H:/drh/idioms/book/RCS/mem.doc,v 1.12 1997/10/27 23:
 #include <stdlib.h>
 #include <stddef.h>
 #include "assert.h"
-#include "arithmetic/except.h"
-#include "mem.h"
+#include "basis/except.h"
+#include "mem/CiiMem.h"
 const Except_T Mem_Failed = { "Allocation Failed" };
 void *Mem_alloc(long nbytes, const char *file, int line){
 	void *ptr;

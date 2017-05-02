@@ -2,7 +2,7 @@ static char rcsid[] = "$Id: H:/drh/idioms/book/RCS/except.doc,v 1.10 1997/02/21 
 #include <stdlib.h>
 #include <stdio.h>
 #include "assert.h"
-#include "arithmetic/except.h"
+#include "basis/except.h"
 #define T Except_T
 #ifdef WIN32
 __declspec(thread)

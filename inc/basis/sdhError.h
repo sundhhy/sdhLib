@@ -44,6 +44,7 @@ typedef int err_t;
 #define ERR_UNINITIALIZED     	-19    /* 未初始化的变量或子系统      */
 #define ERR_CATASTROPHIC_ERR	-20 /* 灾难性错误			*/
 #define ERR_UNAVAILABLE			-21	  /* 不可获取的资源			*/
+#define ERR_OSRSU_UNAVAILABLE	-24	  /* 不可获取的系统资源			*/
 #define ERR_BUSY     			-23    /*       */
 /*
 err_t :

@@ -2,7 +2,7 @@ static char rcsid[] = "$Id: H:/drh/idioms/book/RCS/list.doc,v 1.11 1997/02/21 19
 #include <stdarg.h>
 #include <stddef.h>
 #include "assert.h"
-#include "arithmetic/CiiMem.h"
+#include "mem/CiiMem.h"
 #include "arithmetic/list.h"
 #define T List_T
 T List_push(T list, void *x) {
