@@ -173,6 +173,7 @@ void type##_ctor(type* cthis) {
 
 #define INHERIT_FROM(father, cthis, field)	cthis->father.field
 
+#define abstract	
 #endif
 
 
