@@ -74,6 +74,12 @@
 	regval = ( ( regval & 0xe0ffffff ) | ( ( setval & 0x1f) << 24))
 #define SET_CYCLE2CYCLEDELAY(regval, setval)			\
 	regval = ( ( regval & 0xfffff0ff ) | ( ( setval & 0xf) << 8))
+#define SET_CYCLE2CYCLESAMECSEN(regval, setval)			\
+	regval = ( ( regval & 0xffffff7f ) | ( ( setval & 0x1) << 7))
+#define SET_CYCLE2CYCLEDIFFCSEN(regval, setval)			\
+	regval = ( ( regval & 0xffffffdf ) | ( ( setval & 0x1) << 6))
+#define SET_BUSTURNAROUND(regval, setval)			\
+	regval = ( ( regval & 0xfffffff0 ) | ( ( setval & 0xf) << 0))
 
 // GPMC_CONFIG7
 #define SET_MASKADDRESS(regval, setval)			\
@@ -165,9 +171,10 @@ typedef struct {
 
 //	bool		cs_extra_dealy;			//cs信号额外的半个FCLK的延时
 	char		cs_ontime_ns;
-	char		cycle2cycle_delay_ns;	//连续访问时的时间间隔
-	char		bursturna_round;		//
-	char 		rese[2];
+	char		cycle2cycleDelay_fclk;	//连续访问时的时间间隔 0.. fh Fclk cycles
+	char		cycle2cycleSameCsen; //同一个片选的两次成功访问之间增加一个cycle2cycleDelay_fclk， 0或1
+	char		cycle2cycleDiffCsen; //不同一个片选的两次成功访问之间增加一个cycle2cycleDelay_fclk， 0或1
+	char		bursturnaround_fclk;		// 0.. fh Fclk cycles
 
 }gpmc_common_timing;
 

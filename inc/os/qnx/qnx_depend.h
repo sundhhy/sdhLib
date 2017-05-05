@@ -16,8 +16,10 @@ typedef pthread_mutex_t mutext_t;
 
 void delay_s(int sec);
 void delay_ms(int ms);
+void delay_ns( unsigned long nsec );
 
 int get_currenttime(os_time_t *nowtime);
+void PrintTime(os_time_t *time);
 int cal_timediff_ms( os_time_t *ref_time);
 
 int Mutex_init( mutext_t *mutex);

@@ -275,7 +275,10 @@ static void set_comtiming( Drive_Gpmc *cthis, gpmc_common_timing *timing_cfg)
 
 
 	tmp_reg = GPMC_RD32_REG( cthis, OMAP2420_GPMC_CONFIG6);
-	SET_CYCLE2CYCLEDELAY( tmp_reg, NS_TO_TICK( timing_cfg->cycle2cycle_delay_ns));
+	SET_CYCLE2CYCLEDELAY( tmp_reg,  timing_cfg->cycle2cycleDelay_fclk);
+	SET_CYCLE2CYCLESAMECSEN( tmp_reg,  timing_cfg->cycle2cycleSameCsen);
+	SET_CYCLE2CYCLESAMECSEN( tmp_reg, timing_cfg->cycle2cycleDiffCsen);
+	SET_BUSTURNAROUND( tmp_reg, timing_cfg->bursturnaround_fclk);
 	GPMC_WR32_REG( cthis, OMAP2420_GPMC_CONFIG6, tmp_reg);
 
 	GPMC_WR32_REG( cthis, OMAP2420_GPMC_CONFIG3, 0);		//ADV²»ÐèÒª
