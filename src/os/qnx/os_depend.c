@@ -7,6 +7,8 @@
 #include "os/os_depend.h"
 #include <assert.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <time.h>
 
 void delay_s(int sec)
 {
@@ -18,10 +20,20 @@ void delay_ms(int ms)
 	delay(ms);
 }
 
+void delay_ns( unsigned long nsec )
+{
+	nanospin_ns(nsec);
+}
+
 int get_currenttime(os_time_t *ref_time)
 {
 	return clock_gettime( CLOCK_REALTIME, ref_time);
 
+}
+
+void PrintTime(os_time_t *time)
+{
+	printf(" %s \n", ctime(time ));
 }
 
 int cal_timediff_ms( os_time_t *ref_time)

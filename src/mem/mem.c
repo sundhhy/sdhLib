@@ -1,7 +1,12 @@
 static char rcsid[] = "$Id: H:/drh/idioms/book/RCS/mem.doc,v 1.12 1997/10/27 23:08:05 drh Exp $";
 #include <stdlib.h>
 #include <stddef.h>
+#ifdef NO_ASSERT
 #include "basis/assert.h"
+#else
+#include "assert.h"
+#endif
+
 #include "basis/except.h"
 #include "mem/CiiMem.h"
 const Except_T Mem_Failed = { "Allocation Failed" };
