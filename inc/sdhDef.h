@@ -6,4 +6,7 @@
 #endif
 #define TURE 	1
 #define FALSE	0
+
+
+#define NO_ASSERT 1
 #endif

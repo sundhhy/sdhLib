@@ -1,6 +1,7 @@
 static char rcsid[] = "$Id: H:/drh/idioms/book/RCS/list.doc,v 1.11 1997/02/21 19:46:01 drh Exp $";
 #include <stdarg.h>
 #include <stddef.h>
+#include "sdhDef.h"
 #ifdef NO_ASSERT
 #include "basis/assert.h"
 #else
