@@ -10,7 +10,7 @@
 * @par History:
 *	version: author, date, desc\n
 */
-#include "basis/marco.h"
+#include "basis/macros.h"
 #include <stdlib.h>
 #include <string.h>
 

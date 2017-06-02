@@ -44,7 +44,7 @@ static err_t gpmc_init(Drive_Gpmc *t, void *arg)
 
 
 	uint32_t		tmp_reg;
-	cthis->config = &Gpmc_cfg_c2;
+//	cthis->config = &Gpmc_cfg_c2;
 
 
 	cthis->cs_regoffset = Gpmc_config_offset[ cthis->config->chip_instance];
