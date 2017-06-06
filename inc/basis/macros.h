@@ -16,9 +16,7 @@
 #define SDH_SET_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num >> 3] = ( (uint8_t *)bitmap)[ num/8] | ( 1 << ( num & 0x7))
 #define SDH_CLR_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num>> 3] =  ( (uint8_t *)bitmap)[ num/8] & ~( 1 << ( num & 0x7))
 
-#define container_of(ptr, type, member) ({                      \
-const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
-(type *)( (char *)__mptr - offsetof(type,member) );})
+#define container_of(ptr, type, member) ((type *)( (char *)ptr - offsetof(type,member) ))
 
 void getCompileDate(uint8_t* pDest,uint8_t dsize);
 unsigned char GetCompileMoth( void);
