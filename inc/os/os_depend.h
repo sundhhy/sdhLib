@@ -8,12 +8,13 @@
 #ifndef OS_DEPEND_H_
 #define OS_DEPEND_H_
 #include "sdhlibConf.h"
+
 #ifdef QNX_OS
 #include "os/qnx/qnx_depend.h"
-#endif
-
-#ifdef NO_OS
+#elif defined NO_OS
 #include "os/NoOS_depend.h"
+#elif defined RTX_OS
+#include "os/rtx/rtx_depend.h"
 #endif
 
 
@@ -33,4 +34,7 @@ int Mutex_lock( mutext_t *mutex);
 int Mutex_trylock( mutext_t *mutex);
 int Mutex_unlock( mutext_t *mutex);
 
+int Sem_init(sem_t *sem);
+int Sem_wait(sem_t *sem, int ms);
+int Sem_post(sem_t *sem);
 #endif /* OS_DEPEND_H_ */
