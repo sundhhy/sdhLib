@@ -9,9 +9,12 @@
 #define NOOS_DEPEND_H_
 #include "sdhlibConf.h"
 
+typedef void (*WasteMs)(int ms);
 
 
 typedef int os_time_t;
 typedef int mutext_t;
+
+
 
 #endif /* OS_DEPEND_H_ */

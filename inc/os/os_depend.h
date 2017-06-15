@@ -17,6 +17,8 @@
 #endif
 
 
+void RgtWasteMs( void *wms);
+
 void delay_s(int sec);
 void delay_ms(int ms);
 void delay_ns( unsigned long nsec );
