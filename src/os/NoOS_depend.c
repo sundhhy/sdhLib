@@ -8,11 +8,9 @@
 #include <assert.h>
 #include <stdio.h>
 
-void delay_s(int sec)
-{
-}
+WasteMs Runms = NULL;
 
-void delay_ms(int ms)
+static void Run_ms(int ms)
 {
 	int i = 0;
 	i = CPU_CLOCK / 1000;
@@ -21,6 +19,31 @@ void delay_ms(int ms)
 	{
 		;
 	}
+	
+}
+
+void RgtWasteMs( void * wms)
+{
+	
+	Runms = ( WasteMs)wms;
+}
+
+
+void delay_s(int sec)
+{
+}
+
+void delay_ms(int ms)
+{
+	int i = 0;
+	
+	
+		if( Runms)
+			Runms(ms);
+		else
+			Run_ms(ms);
+	
+	
 }
 
 void delay_ns( unsigned long nsec )
