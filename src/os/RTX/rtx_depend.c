@@ -133,13 +133,13 @@ int Sem_post(sem_t *sem)
 			osSemaphoreRelease( sid_Sem0);
 			break;
 		case 1:
-			osSemaphoreRelease( sid_Sem0);
+			osSemaphoreRelease( sid_Sem1);
 			break;
 		case 2:
-			osSemaphoreRelease( sid_Sem0);
+			osSemaphoreRelease( sid_Sem2);
 			break;
 		case 3:
-			osSemaphoreRelease( sid_Sem0);
+			osSemaphoreRelease( sid_Sem3);
 			break;
 		default:
 			return ERR_BAD_PARAMETER;
