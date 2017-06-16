@@ -1,6 +1,8 @@
 #ifndef _DEF_H__
 #define _DEF_H__
 #include "sdhlibConf.h"
+#include "basis/sdhDebug.h"
+#include "basis/sdhError.h"
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
