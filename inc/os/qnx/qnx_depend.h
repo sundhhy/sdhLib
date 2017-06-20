@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <pthread.h>
 #include <errno.h>
+#include <semaphore.h>
+
 typedef struct timespec os_time_t;
 typedef pthread_mutex_t mutext_t;
 

@@ -8,7 +8,8 @@
 #ifndef IBUS_H_
 #define IBUS_H_
 #include <stdint.h>
-
+#include <semaphore.h>
+#include "arithmetic/crc.h"
 #define CRCLEN 2
 uint16_t htbs( uint16_t hostshort);
 uint16_t bths( uint16_t busshort);
