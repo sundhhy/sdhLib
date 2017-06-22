@@ -35,7 +35,7 @@ void delay_s(int sec)
 
 void delay_ms(int ms)
 {
-	int i = 0;
+//	int i = 0;
 	
 	
 		if( Runms)
