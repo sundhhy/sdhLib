@@ -3,6 +3,7 @@
 #include "sdhlibConf.h"
 #include "basis/sdhDebug.h"
 #include "basis/sdhError.h"
+#include "basis/macros.h"
 #ifndef NULL
 #define NULL ((void *)0)
 #endif
