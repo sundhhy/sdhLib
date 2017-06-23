@@ -20,6 +20,8 @@
 #define MEMBER_OFFSET(s, m) offsetof(s,m)
 //#define MEMBER_OFFSET(s, m) (size_t)&(((s*)0)->m)
 
+#define ARRY_LENGTH( x) ( sizeof(x)/sizeof(x[0])
+
 void getCompileDate(uint8_t* pDest,uint8_t dsize);
 unsigned char GetCompileMoth( void);
 unsigned char GetCompileDay( void);
