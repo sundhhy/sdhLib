@@ -4,4 +4,5 @@
 #include <stdint.h>
 
 uint16_t Crc16(uint8_t *puchMsg, uint16_t usDataLen);
+uint16_t getCRC_CCITT( uint8_t data[], int len);
 #endif
