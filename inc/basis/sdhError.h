@@ -5,7 +5,17 @@ typedef int err_t;
 
 #define RET_OK						0
 
+#define ERR_BEEN_INSTALL				-0x100		//已经被初始化过了，可以通过卸载来去除这个错误
+#define ERR_NOT_EXIST					-0x101
+//设备类错误
+#define ERR_DEV_UNAVAILABLE				-0x200		//
+
+//资源类错误
+#define ERR_RSU_UNAVAILABLE				-0x300
+
+//以下的错误代码不要再使用了 170714
 #define ERR_MEM_UNAVAILABLE			-6					/* ??????			*/
+
 #define ERR_RES_UNAVAILABLE			-7					/* ??????			*/
 #define ERR_DEV_TIMEOUT					-8					/* ??????			*/
 #define ERR_FAIL								-9					/* 操作失败		*/ 
