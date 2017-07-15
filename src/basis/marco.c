@@ -64,17 +64,29 @@ void getCompileDate(uint8_t* pDest,uint8_t dsize)
 
 }
 
-//char GetCompileYear()
-//{
-//	char temp [] = __DATE__;
-//	unsigned char i;
-//	unsigned char month = 1, day, year;
+int GetCompileYear(void)
+{
+	char *p = __DATE__;
+	
+	int spacenum, year;
+	
+	
+	spacenum = 0;
+	while(1)
+	{
+		if( *p++ == ' ')
+			spacenum ++;
+		if( spacenum == 2)
+			break;
+		
+	}
+	
 
-//	year = atoi(temp + 9);
-//	
+	year = atoi(p);
+	
 
-//	return year;
-//}
+	return year;
+}
 
 unsigned char GetCompileMoth(void)
 {

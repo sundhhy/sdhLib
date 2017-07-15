@@ -22,6 +22,7 @@
 
 #define ARRY_LENGTH( x) ( sizeof(x)/sizeof(x[0])
 
+int GetCompileYear(void);
 void getCompileDate(uint8_t* pDest,uint8_t dsize);
 unsigned char GetCompileMoth( void);
 unsigned char GetCompileDay( void);
