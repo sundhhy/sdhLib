@@ -27,6 +27,7 @@ void delay_ns( unsigned long nsec );
 int get_currenttime(os_time_t *nowtime);
 void PrintTime(os_time_t *time);
 int cal_timediff_ms( os_time_t *ref_time);
+int DiffTimes_ms( os_time_t *p_start, os_time_t *P_end);
 
 int Mutex_init( mutext_t *mutex);
 int Mutex_destory( mutext_t *mutex);

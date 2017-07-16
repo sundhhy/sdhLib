@@ -41,6 +41,10 @@ void delay_ns( unsigned long nsec )
 
 int get_currenttime(os_time_t *ref_time)
 {
+//	uint32_t tick;
+//	uint32_t tick_1ms = osKernelSysTickMicroSec(1);
+//	tick = osKernelSysTick(); 
+	*ref_time = osKernelSysTick(); 
 	return RET_OK;
 
 }
@@ -53,9 +57,34 @@ void PrintTime(os_time_t *time)
 int cal_timediff_ms( os_time_t *ref_time)
 {
 
+	uint32_t tick;
+	uint32_t tick_1ms = osKernelSysTickMicroSec(1); 
 	
+	tick = osKernelSysTick();	
+	if( tick > *ref_time)
+		tick -= *ref_time;
+	else
+	{
+		tick = tick + 0xffffffff - *ref_time;
+		
+	}
+	return tick/tick_1ms;
 
-	return RET_OK;
+}
+
+int DiffTimes_ms( os_time_t *p_start, os_time_t *P_end)
+{
+
+	uint32_t tick_1ms = osKernelSysTickMicroSec(1); 
+	
+	if( *P_end > *p_start)
+		*P_end -= *p_start;
+	else
+	{
+		*P_end = *P_end + 0xffffffff - *p_start;
+		
+	}
+	return *P_end/tick_1ms;
 
 }
 
