@@ -39,11 +39,9 @@ void delay_ns( unsigned long nsec )
 	;
 }
 
+//不能在中断中运行
 int get_currenttime(os_time_t *ref_time)
 {
-//	uint32_t tick;
-//	uint32_t tick_1ms = osKernelSysTickMicroSec(1);
-//	tick = osKernelSysTick(); 
 	*ref_time = osKernelSysTick(); 
 	return RET_OK;
 
@@ -58,9 +56,9 @@ int cal_timediff_ms( os_time_t *ref_time)
 {
 
 	uint32_t tick;
-	uint32_t tick_1ms = osKernelSysTickMicroSec(1); 
-	
-	tick = osKernelSysTick();	
+	uint32_t tick_1ms; 
+	tick_1ms = osKernelSysTickMicroSec(1);
+	tick = osKernelSysTick(); 
 	if( tick > *ref_time)
 		tick -= *ref_time;
 	else
