@@ -59,4 +59,7 @@ const struct sigevent *gpioExtInteIsr (void *area, int id);
 //extern struct sigevent	Gpio_event;
 extern void GPIOModuleEnable(uintptr_t baseAdd);
 void GPIO3ModuleClkConfig(void);
+int InitOutputPin(gpio_cfg *p_cfg);
+int PinOutput(gpio_cfg *p_cfg, char val);
+int DestoryOutputPin(gpio_cfg *p_cfg);
 #endif /* AM335X_GPIO_H_ */

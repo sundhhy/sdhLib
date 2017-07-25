@@ -42,6 +42,7 @@ const uint8_t GpioIntNum[2][4] =
 const uint32_t	GpioBase[4] =
 { AM335X_GPIO0_BASE, AM335X_GPIO1_BASE, AM335X_GPIO2_BASE, AM335X_GPIO3_BASE};
 
+uintptr_t arr_gpioVbase[4] = { MAP_DEVICE_FAILED};
 
 static err_t gpio_init(Drive_Gpio *t)
 {
@@ -120,6 +121,68 @@ static err_t gpio_init(Drive_Gpio *t)
 	return EXIT_SUCCESS;
 
 #endif
+}
+
+int InitOutputPin(gpio_cfg *p_cfg)
+{
+	uintptr_t			gpio_vbase;
+	uint32_t			tmp_reg = 0;
+	gpio_vbase = mmap_device_io( AM335X_GPIO_SIZE, GpioBase[ p_cfg->pin_group]);
+	if ( gpio_vbase == MAP_DEVICE_FAILED)
+	{
+
+		return ERROR_T( gpio_init_mapio_fail);
+	}
+
+	arr_gpioVbase[ p_cfg->pin_group] = gpio_vbase;
+
+	//配置引脚方向为输入
+	tmp_reg = in32( gpio_vbase + GPIO_OE );
+	tmp_reg &= ~( 1 << p_cfg->pin_number);
+	out32( gpio_vbase + GPIO_OE, tmp_reg );
+
+	return EXIT_SUCCESS;
+
+}
+
+int PinOutput(gpio_cfg *p_cfg, char val)
+{
+	uintptr_t			gpio_vbase;
+	uint32_t			tmp_reg = 0;
+	gpio_vbase = arr_gpioVbase[ p_cfg->pin_group];
+	if ( gpio_vbase == MAP_DEVICE_FAILED)
+	{
+
+		return ERROR_T( gpio_init_mapio_fail);
+	}
+
+
+	val &= 1;
+	tmp_reg = in32( gpio_vbase + GPIO_DATAOUT );
+	tmp_reg &= ~( 1 << p_cfg->pin_number);
+	tmp_reg |=  val << p_cfg->pin_number;
+	out32( gpio_vbase + GPIO_DATAOUT, tmp_reg );
+
+	return EXIT_SUCCESS;
+
+}
+
+int DestoryOutputPin(gpio_cfg *p_cfg)
+{
+	uintptr_t			gpio_vbase;
+
+	gpio_vbase = arr_gpioVbase[ p_cfg->pin_group];
+	if ( gpio_vbase != MAP_DEVICE_FAILED)
+	{
+		munmap_device_io(gpio_vbase,  AM335X_GPIO_SIZE);
+		arr_gpioVbase[ p_cfg->pin_group] = MAP_DEVICE_FAILED;
+	}
+
+
+
+
+	return EXIT_SUCCESS;
+
 }
 
 static err_t gpio_enableIrq(Drive_Gpio *t)
