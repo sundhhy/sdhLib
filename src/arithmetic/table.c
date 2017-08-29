@@ -33,7 +33,7 @@ T Table_new(int hint,
 	unsigned hash(const void *key)) {
 	T table;
 	int i;
-	static int primes[] = { 48, 509, 1021, 2053, 4093,
+	static int primes[] = { 67, 509, 1021, 2053, 4093,
 		8191, 16381, 32771, 65521, INT_MAX };
 	assert(hint >= 0);
 	for (i = 1; primes[i] < hint; i++)
