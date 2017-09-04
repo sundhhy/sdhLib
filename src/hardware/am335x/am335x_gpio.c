@@ -26,7 +26,7 @@ void GPIO4ModuleClkConfig(void);
 void GPIOModuleEnable(uintptr_t baseAdd);
 void GPIOModuleDisable(uintptr_t baseAdd);
 static void dump_gpio_reg( uintptr_t baseAdd);
-
+static void *Intr_thread(void *arg);
 
 static void (*gpioModuleConfig[4])(void) =
 		{
@@ -117,7 +117,8 @@ static err_t gpio_init(Drive_Gpio *t)
 	dump_gpio_reg( cthis->gpio_vbase);
 #endif
 	SIGEV_INTR_INIT( &cthis->isr_event );
-	cthis->irq_id = InterruptAttach_r ( GpioIntNum[ config->intr_line][ config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+	pthread_create (&cthis->pid, NULL, Intr_thread, cthis);
+//	cthis->irq_id = InterruptAttach_r ( GpioIntNum[ config->intr_line][ config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
 	return EXIT_SUCCESS;
 
 #endif
@@ -236,13 +237,15 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 	uint32_t stats;
 	stats = in32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line));
 
+	cthis->states = stats;
+
 	if( stats & ( 1<< cthis->config->pin_number))
 	{
 //		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
 //		stats &= ~( 1<< cthis->config->pin_number);
 //		out32( cthis->gpio_vbase + GPIO_IRQSTATUS_RAW( cthis->config->intr_line), stats);
 #ifndef DEBUG_ONLY_GPIO_INIT
-		cthis->irq_handle( cthis->irq_handle_arg);
+//		cthis->irq_handle( cthis->irq_handle_arg);
 #endif
 //		Dubug_info.irq_count[ cthis->config->instance] ++;
 		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
@@ -254,6 +257,26 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 
 	return NULL;
 
+}
+
+static void *Intr_thread(void *arg)
+{
+	Drive_Gpio 		*cthis = ( Drive_Gpio *)arg ;
+//	gpio_cfg 		*config = cthis->config;
+//	uint32_t stats = 0;
+
+	cthis->irq_id = InterruptAttach_r ( GpioIntNum[  cthis->config->intr_line][  cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+
+	pthread_detach(pthread_self());
+	while(1) {
+		InterruptWait (NULL, NULL);
+		if( cthis->states & ( 1<< cthis->config->pin_number)) {
+			cthis->irq_handle( cthis->irq_handle_arg);
+		}
+
+	}
+
+	return NULL;
 }
 
 
