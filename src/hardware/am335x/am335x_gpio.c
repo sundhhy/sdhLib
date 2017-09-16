@@ -16,6 +16,7 @@
 #include "hardware/am335x/pin_mux.h"
 #include <errno.h>
 
+#define INTR_THREAD			1   //用线程来处理中断
 
 void GPIO0ModuleClkConfig(void);
 void GPIO1ModuleClkConfig(void);
@@ -56,7 +57,7 @@ static err_t gpio_init(Drive_Gpio *t)
 	 assert( config->intr_line < 2);
 
 
-	 config_pin( config->pin_ctrl_off, MODE(7), 0x30);
+	config_pin( config->pin_ctrl_off, MODE(7), 0x30);
 	cthis->gpio_vbase = mmap_device_io( AM335X_GPIO_SIZE, GpioBase[ config->pin_group]);
 #ifdef DEBUG_GPIO
 	TRACE_INFO("Drive Piling :%s-%s-%d \r\n", __FILE__, __func__, __LINE__);
@@ -68,13 +69,13 @@ static err_t gpio_init(Drive_Gpio *t)
 
 		return ERROR_T( gpio_init_mapio_fail);
 	}
+	tmp_reg = in32( cthis->gpio_vbase + GPIO_OE);
 	gpioModuleConfig[ config->pin_group]();
-//
 	GPIOModuleEnable( cthis->gpio_vbase);
 
 
 	//配置引脚方向为输入
-	tmp_reg = in32( cthis->gpio_vbase + GPIO_OE );
+
 	tmp_reg |= 1 << config->pin_number;
 	out32( cthis->gpio_vbase + GPIO_OE, tmp_reg );
 
@@ -86,7 +87,7 @@ static err_t gpio_init(Drive_Gpio *t)
 	out32( cthis->gpio_vbase + GPIO_DEBOUNCENABLE, tmp_reg);
 
 	//消抖时间
-	out32( cthis->gpio_vbase + GPIO_DEBOUNCINGTIME, ( config->debou_time ));
+	out32(cthis->gpio_vbase + GPIO_DEBOUNCINGTIME, ( config->debou_time ));
 
 	//配置中断监测类型
 	for( i = 0; i < 4; i ++)
@@ -117,8 +118,11 @@ static err_t gpio_init(Drive_Gpio *t)
 	dump_gpio_reg( cthis->gpio_vbase);
 #endif
 	SIGEV_INTR_INIT( &cthis->isr_event );
+#if INTR_THREAD == 1
 	pthread_create (&cthis->pid, NULL, Intr_thread, cthis);
-//	cthis->irq_id = InterruptAttach_r ( GpioIntNum[ config->intr_line][ config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+#else
+	cthis->irq_id = InterruptAttach_r ( GpioIntNum[ config->intr_line][ config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+#endif
 	return EXIT_SUCCESS;
 
 #endif
@@ -137,7 +141,7 @@ int InitOutputPin(gpio_cfg *p_cfg)
 
 	arr_gpioVbase[ p_cfg->pin_group] = gpio_vbase;
 
-	//配置引脚方向为输入
+	//配置引脚方向为输出
 	tmp_reg = in32( gpio_vbase + GPIO_OE );
 	tmp_reg &= ~( 1 << p_cfg->pin_number);
 	out32( gpio_vbase + GPIO_OE, tmp_reg );
@@ -160,9 +164,9 @@ int PinOutput(gpio_cfg *p_cfg, char val)
 
 	val &= 1;
 	tmp_reg = in32( gpio_vbase + GPIO_DATAOUT );
-	tmp_reg &= ~( 1 << p_cfg->pin_number);
+	tmp_reg &= ~(1 << p_cfg->pin_number);
 	tmp_reg |=  val << p_cfg->pin_number;
-	out32( gpio_vbase + GPIO_DATAOUT, tmp_reg );
+	out32(gpio_vbase + GPIO_DATAOUT, tmp_reg );
 
 	return EXIT_SUCCESS;
 
@@ -244,8 +248,8 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 //		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
 //		stats &= ~( 1<< cthis->config->pin_number);
 //		out32( cthis->gpio_vbase + GPIO_IRQSTATUS_RAW( cthis->config->intr_line), stats);
-#ifndef DEBUG_ONLY_GPIO_INIT
-//		cthis->irq_handle( cthis->irq_handle_arg);
+#if INTR_THREAD == 0
+		cthis->irq_handle( cthis->irq_handle_arg);
 #endif
 //		Dubug_info.irq_count[ cthis->config->instance] ++;
 		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
@@ -265,7 +269,7 @@ static void *Intr_thread(void *arg)
 //	gpio_cfg 		*config = cthis->config;
 //	uint32_t stats = 0;
 
-	cthis->irq_id = InterruptAttach_r ( GpioIntNum[  cthis->config->intr_line][  cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+	cthis->irq_id = InterruptAttach_r ( GpioIntNum[cthis->config->intr_line][cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
 
 	pthread_detach(pthread_self());
 	while(1) {
