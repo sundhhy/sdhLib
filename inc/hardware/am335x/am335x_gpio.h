@@ -15,6 +15,8 @@
 #include "hardware_cfg.h"
 #include "am335x.h"
 #include <sys/neutrino.h>
+#include <pthread.h>
+
 
 #define		LOW_LEVELDETECT 	( 1 << 0)
 #define		HIG_LEVELDETECT 	( 1 << 1)
@@ -39,6 +41,8 @@ CLASS(Drive_Gpio)
 	int					irq_id;
 	uintptr_t			gpio_vbase;
 	gpio_cfg			*config;
+	pthread_t			pid;
+	uint32_t			states;
 	struct sigevent		isr_event;
 
 };
