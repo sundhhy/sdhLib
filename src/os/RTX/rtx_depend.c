@@ -22,7 +22,11 @@ osSemaphoreDef(rtxSemaphore2);
 osSemaphoreId sid_Sem3;                             
 osSemaphoreDef(rtxSemaphore3); 
 
+osSemaphoreId sid_Sem4;                             
+osSemaphoreDef(rtxSemaphore4); 
 
+osSemaphoreId sid_Sem5;                             
+osSemaphoreDef(rtxSemaphore5); 
 
 void delay_s(int sec)
 {
@@ -39,11 +43,9 @@ void delay_ns( unsigned long nsec )
 	;
 }
 
+//不能在中断中运行
 int get_currenttime(os_time_t *ref_time)
 {
-//	uint32_t tick;
-//	uint32_t tick_1ms = osKernelSysTickMicroSec(1);
-//	tick = osKernelSysTick(); 
 	*ref_time = osKernelSysTick(); 
 	return RET_OK;
 
@@ -58,9 +60,9 @@ int cal_timediff_ms( os_time_t *ref_time)
 {
 
 	uint32_t tick;
-	uint32_t tick_1ms = osKernelSysTickMicroSec(1); 
-	
-	tick = osKernelSysTick();	
+	uint32_t tick_1ms; 
+	tick_1ms = osKernelSysTickMicroSec(1);
+	tick = osKernelSysTick(); 
 	if( tick > *ref_time)
 		tick -= *ref_time;
 	else
@@ -122,6 +124,20 @@ int Sem_init(sem_t *sem)
 			}
 			osSemaphoreWait( sid_Sem3, 0 );
 			break;
+		case 4:
+			sid_Sem4 = osSemaphoreCreate (osSemaphore(rtxSemaphore4), 1);
+			if (!sid_Sem4) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem4, 0 );
+			break;
+		case 5:
+			sid_Sem5 = osSemaphoreCreate (osSemaphore(rtxSemaphore5), 1);
+			if (!sid_Sem5) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem5, 0 );
+			break;
 		default:
 			ret = ERR_BAD_PARAMETER;
 			break;
@@ -146,6 +162,10 @@ int Sem_wait(sem_t *sem, int ms)
 			return osSemaphoreWait( sid_Sem2, ms );
 		case 3:
 			return osSemaphoreWait( sid_Sem3, ms );
+		case 4:
+			return osSemaphoreWait( sid_Sem4, ms );
+		case 5:
+			return osSemaphoreWait( sid_Sem5, ms );
 		default:
 			break;
 		
@@ -169,6 +189,12 @@ int Sem_post(sem_t *sem)
 			break;
 		case 3:
 			osSemaphoreRelease( sid_Sem3);
+			break;
+		case 4:
+			osSemaphoreRelease( sid_Sem4);
+			break;
+		case 5:
+			osSemaphoreRelease( sid_Sem5);
 			break;
 		default:
 			return ERR_BAD_PARAMETER;
