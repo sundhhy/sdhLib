@@ -33,6 +33,7 @@ static void (*gpioModuleConfig[4])(void) =
 		{
 				GPIO0ModuleClkConfig, GPIO1ModuleClkConfig, GPIO2ModuleClkConfig, GPIO3ModuleClkConfig
 		};
+static char	group_flag[4] = {0};
 //GPIOINT0..3
 const uint8_t GpioIntNum[2][4] =
 {
@@ -69,13 +70,18 @@ static err_t gpio_init(Drive_Gpio *t)
 
 		return ERROR_T( gpio_init_mapio_fail);
 	}
-	tmp_reg = in32( cthis->gpio_vbase + GPIO_OE);
-	gpioModuleConfig[ config->pin_group]();
-	GPIOModuleEnable( cthis->gpio_vbase);
+
+
+	//todo:应该把这两句放到其他位置，不然每次初始化一个已经都会把GPIO模块重新初始化一次
+	if(config->clk_init) {
+		gpioModuleConfig[ config->pin_group]();
+		GPIOModuleEnable( cthis->gpio_vbase);
+		group_flag[config->pin_group] = 1;
+	}
 
 
 	//配置引脚方向为输入
-
+	tmp_reg = in32( cthis->gpio_vbase + GPIO_OE);
 	tmp_reg |= 1 << config->pin_number;
 	out32( cthis->gpio_vbase + GPIO_OE, tmp_reg );
 
