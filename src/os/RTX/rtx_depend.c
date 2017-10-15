@@ -28,6 +28,9 @@ osSemaphoreDef(rtxSemaphore4);
 osSemaphoreId sid_Sem5;                             
 osSemaphoreDef(rtxSemaphore5); 
 
+osSemaphoreId sid_Sem6;                             
+osSemaphoreDef(rtxSemaphore6);
+
 void delay_s(int sec)
 {
 	;
@@ -138,6 +141,13 @@ int Sem_init(sem_t *sem)
 			}
 			osSemaphoreWait( sid_Sem5, 0 );
 			break;
+		case 6:
+			sid_Sem6 = osSemaphoreCreate (osSemaphore(rtxSemaphore6), 1);
+			if (!sid_Sem6) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem6, 0 );
+			break;
 		default:
 			ret = ERR_BAD_PARAMETER;
 			break;
@@ -166,6 +176,8 @@ int Sem_wait(sem_t *sem, int ms)
 			return osSemaphoreWait( sid_Sem4, ms );
 		case 5:
 			return osSemaphoreWait( sid_Sem5, ms );
+		case 6:
+			return osSemaphoreWait( sid_Sem6, ms );
 		default:
 			break;
 		
@@ -195,6 +207,8 @@ int Sem_post(sem_t *sem)
 			break;
 		case 5:
 			osSemaphoreRelease( sid_Sem5);
+		case 6:
+			osSemaphoreRelease( sid_Sem6);
 			break;
 		default:
 			return ERR_BAD_PARAMETER;
