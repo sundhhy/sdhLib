@@ -122,7 +122,9 @@ CLASS(Drive_Gpmc)
 	err_t 	(*init)(Drive_Gpmc * , void * );
 	err_t	( *destory)( Drive_Gpmc *);
 
-
+	//在多进程编程时，总线不必在每个进程都对总线进行初始化
+	//对于不必初始化的进程，只需要映射下内存即可操作了
+	err_t 	(*map)(Drive_Gpmc * , void * );
 
 	err_t	(*write_u8)(Drive_Gpmc *, uint32_t , uint8_t );
 	uint8_t	(*read_u8)(Drive_Gpmc *, uint32_t );
