@@ -127,6 +127,27 @@ GPMC_CONFIG7 :0x0f5a
 	return EXIT_SUCCESS;
 }
 
+
+static err_t Gpmc_map(Drive_Gpmc *t, void *arg)
+{
+	Drive_Gpmc 		*cthis = ( Drive_Gpmc *)t ;
+	uintptr_t		pAddr;
+	gpmc_chip_cfg 	*p_conf = (gpmc_chip_cfg 	*)arg;
+
+	pAddr =  mmap_device_io(p_conf->mmap_size,p_conf->base_address);
+	if ( pAddr == MAP_DEVICE_FAILED)
+	{
+		munmap_device_io(cthis->gpmc_vbase, OMAP3530_GPMC_SIZE);
+		return ERROR_T( init_mapio_fail);
+	}
+	cthis->pBusU16 = ( volatile uint16_t *)pAddr;
+	cthis->pBusU8 = ( volatile uint8_t *)pAddr;
+	cthis->map_io = ( volatile uint8_t *)pAddr;
+
+
+	return EXIT_SUCCESS;
+}
+
 static err_t gpmc_destory(Drive_Gpmc *t)
 {
 	Drive_Gpmc 		*cthis = ( Drive_Gpmc *)t ;
@@ -297,6 +318,7 @@ CTOR(Drive_Gpmc)
 
 FUNCTION_SETTING(init, gpmc_init);
 FUNCTION_SETTING(destory, gpmc_destory);
+FUNCTION_SETTING(map, Gpmc_map);
 
 
 FUNCTION_SETTING(write_u8, gpmc_write_u8);

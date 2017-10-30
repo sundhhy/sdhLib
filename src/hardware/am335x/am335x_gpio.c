@@ -17,6 +17,7 @@
 #include <errno.h>
 
 #define INTR_THREAD			1   //用线程来处理中断
+//#define DEBUG_GPIO
 
 void GPIO0ModuleClkConfig(void);
 void GPIO1ModuleClkConfig(void);
@@ -26,7 +27,7 @@ void GPIO4ModuleClkConfig(void);
 
 void GPIOModuleEnable(uintptr_t baseAdd);
 void GPIOModuleDisable(uintptr_t baseAdd);
-static void dump_gpio_reg( uintptr_t baseAdd);
+
 static void *Intr_thread(void *arg);
 
 static void (*gpioModuleConfig[4])(void) =
@@ -87,13 +88,15 @@ static err_t gpio_init(Drive_Gpio *t)
 
 
 	//使能消抖
-	tmp_reg=in32( cthis->gpio_vbase + GPIO_DEBOUNCENABLE);
-	tmp_reg &=~( 1 << config->pin_number);
-	tmp_reg |= ( 1 << config->pin_number);
-	out32( cthis->gpio_vbase + GPIO_DEBOUNCENABLE, tmp_reg);
+	if(config->debou_time) {
+		tmp_reg=in32( cthis->gpio_vbase + GPIO_DEBOUNCENABLE);
+		tmp_reg &=~( 1 << config->pin_number);
+		tmp_reg |= ( 1 << config->pin_number);
+		out32( cthis->gpio_vbase + GPIO_DEBOUNCENABLE, tmp_reg);
 
-	//消抖时间
-	out32(cthis->gpio_vbase + GPIO_DEBOUNCINGTIME, ( config->debou_time ));
+		//消抖时间
+		out32(cthis->gpio_vbase + GPIO_DEBOUNCINGTIME, ( config->debou_time ));
+	}
 
 	//配置中断监测类型
 	for( i = 0; i < 4; i ++)
@@ -138,6 +141,8 @@ int InitOutputPin(gpio_cfg *p_cfg)
 {
 	uintptr_t			gpio_vbase;
 	uint32_t			tmp_reg = 0;
+
+	config_pin( p_cfg->pin_ctrl_off, MODE(7), 0x10);
 	gpio_vbase = mmap_device_io( AM335X_GPIO_SIZE, GpioBase[ p_cfg->pin_group]);
 	if ( gpio_vbase == MAP_DEVICE_FAILED)
 	{
@@ -246,7 +251,7 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 	Drive_Gpio 		*cthis = ( Drive_Gpio *)area ;
 	uint32_t stats;
 	stats = in32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line));
-
+//	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
 	cthis->states = stats;
 
 	if( stats & ( 1<< cthis->config->pin_number))
@@ -263,7 +268,7 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 		return ( &cthis->isr_event);
 	}
 
-	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
+	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
 
 	return NULL;
 
@@ -290,23 +295,23 @@ static void *Intr_thread(void *arg)
 }
 
 
-//static void dump_gpio_reg( uintptr_t baseAdd)
-//{
+void dump_gpio_reg( uintptr_t baseAdd)
+{
 //	TRACE_INFO("GPIO_REVISION 0x%04x \r\n", in32( baseAdd + GPIO_REVISION ));
 //	TRACE_INFO("GPIO_SYSCONFIG 0x%04x \r\n", in32( baseAdd + GPIO_SYSCONFIG ));
 //	TRACE_INFO("GPIO_EOI 0x%04x \r\n", in32( baseAdd + GPIO_EOI ));
-//	TRACE_INFO("GPIO_IRQSTATUS_RAW_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_RAW_0 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_RAW_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_RAW_1 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_0 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_1 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_SET_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_SET_0 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_SET_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_SET_1 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_CLR_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_CLR_0 ));
-//	TRACE_INFO("GPIO_IRQSTATUS_CLR_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_CLR_1 ));
+	TRACE_INFO("GPIO_IRQSTATUS_RAW_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_RAW_0 ));
+	TRACE_INFO("GPIO_IRQSTATUS_RAW_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_RAW_1 ));
+	TRACE_INFO("GPIO_IRQSTATUS_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_0 ));
+	TRACE_INFO("GPIO_IRQSTATUS_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_1 ));
+	TRACE_INFO("GPIO_IRQSTATUS_SET_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_SET_0 ));
+	TRACE_INFO("GPIO_IRQSTATUS_SET_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_SET_1 ));
+	TRACE_INFO("GPIO_IRQSTATUS_CLR_0 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_CLR_0 ));
+	TRACE_INFO("GPIO_IRQSTATUS_CLR_1 0x%04x \r\n", in32( baseAdd + GPIO_IRQSTATUS_CLR_1 ));
 //	TRACE_INFO("GPIO_SYSSTATUS 0x%04x \r\n", in32( baseAdd + GPIO_SYSSTATUS ));
 //	TRACE_INFO("GPIO_CTRL 0x%04x \r\n", in32( baseAdd + GPIO_CTRL ));
 //	TRACE_INFO("GPIO_OE 0x%04x \r\n", in32( baseAdd + GPIO_OE ));
-//	TRACE_INFO("GPIO_DATAIN 0x%04x \r\n", in32( baseAdd + GPIO_DATAIN ));
+	TRACE_INFO("GPIO_DATAIN 0x%04x \r\n", in32( baseAdd + GPIO_DATAIN ));
 //	TRACE_INFO("GPIO_DATAOUT 0x%04x \r\n", in32( baseAdd + GPIO_DATAOUT ));
 //	TRACE_INFO("GPIO_LEVELDETECT0 0x%04x \r\n", in32( baseAdd + GPIO_LEVELDETECT0 ));
 //	TRACE_INFO("GPIO_LEVELDETECT1 0x%04x \r\n", in32( baseAdd + GPIO_LEVELDETECT1 ));
@@ -316,7 +321,7 @@ static void *Intr_thread(void *arg)
 //	TRACE_INFO("GPIO_DEBOUNCINGTIME 0x%04x \r\n", in32( baseAdd + GPIO_DEBOUNCINGTIME ));
 //	TRACE_INFO("GPIO_CLEARDATAOUT 0x%04x \r\n", in32( baseAdd + GPIO_CLEARDATAOUT ));
 //	TRACE_INFO("GPIO_SETDATAOUT 0x%04x \r\n", in32( baseAdd + GPIO_SETDATAOUT ));
-//}
+}
 
 #define GPIO_CTRL_DISABLEMODULE   (0x00000001u)
 //#define CM_PER_GPIO1_CLKCTRL		(0xAC)	// This register manages the GPIO1 clocks. Section 8.1.2.1.41
@@ -420,48 +425,36 @@ void GPIO0ModuleClkConfig(void)
 
 void GPIO1ModuleClkConfig(void)
 {
-	//todo
+	static char invo_count = 0;
+	uintptr_t prcm_base;
+	uint32_t	val;
 
+	if( invo_count)	//第二次调用直接退出
+		return;
+	invo_count ++;
 
-//	/* Writing to MODULEMODE field of CM_PER_GPIO1_CLKCTRL register. */
-//	HWREG(SOC_CM_PER_REGS + CM_PER_GPIO1_CLKCTRL) |=
-//		  CM_PER_GPIO1_CLKCTRL_MODULEMODE_ENABLE;
-//
-//	/* Waiting for MODULEMODE field to reflect the written value. */
-//	while(CM_PER_GPIO1_CLKCTRL_MODULEMODE_ENABLE !=
-//		  (HWREG(SOC_CM_PER_REGS + CM_PER_GPIO1_CLKCTRL) &
-//		   CM_PER_GPIO1_CLKCTRL_MODULEMODE));
-//	/*
-//	** Writing to OPTFCLKEN_GPIO_1_GDBCLK bit in CM_PER_GPIO1_CLKCTRL
-//	** register.
-//	*/
-//	HWREG(SOC_CM_PER_REGS + CM_PER_GPIO1_CLKCTRL) |=
-//		  CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK;
-//
-//	/*
-//	** Waiting for OPTFCLKEN_GPIO_1_GDBCLK bit to reflect the desired
-//	** value.
-//	*/
-//	while(CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK !=
-//		  (HWREG(SOC_CM_PER_REGS + CM_PER_GPIO1_CLKCTRL) &
-//		   CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK));
-//
-//	/*
-//	** Waiting for IDLEST field in CM_PER_GPIO1_CLKCTRL register to attain the
-//	** desired value.
-//	*/
-//	while((CM_PER_GPIO1_CLKCTRL_IDLEST_FUNC <<
-//		   CM_PER_GPIO1_CLKCTRL_IDLEST_SHIFT) !=
-//		   (HWREG(SOC_CM_PER_REGS + CM_PER_GPIO1_CLKCTRL) &
-//			CM_PER_GPIO1_CLKCTRL_IDLEST));
-//
-//	/*
-//	** Waiting for CLKACTIVITY_GPIO_1_GDBCLK bit in CM_PER_L4LS_CLKSTCTRL
-//	** register to attain desired value.
-//	*/
-//	while(CM_PER_L4LS_CLKSTCTRL_CLKACTIVITY_GPIO_1_GDBCLK !=
-//		  (HWREG(SOC_CM_PER_REGS + CM_PER_L4LS_CLKSTCTRL) &
-//		   CM_PER_L4LS_CLKSTCTRL_CLKACTIVITY_GPIO_1_GDBCLK));
+	prcm_base=mmap_device_io(CM_PRCM_SIZE,PRCM_BASE);
+
+	/* Writing to MODULEMODE field of CM_WKUP_GPIO0_CLKCTRL register. */
+	out32(prcm_base+CM_PER_GPIO1_CLKCTRL,CM_PER_GPIO1_CLKCTRL_MODULEMODE_ENABLE);
+
+	/* Waiting for MODULEMODE field to reflect the written value. */
+	while(CM_PER_GPIO1_CLKCTRL_MODULEMODE_ENABLE !=
+		  (in32(prcm_base + CM_PER_GPIO1_CLKCTRL) &
+				  CM_PER_GPIO1_CLKCTRL_MODULEMODE_ENABLE));
+
+	/*
+	** Writing to OPTFCLKEN_GPIO0_GDBCLK field of CM_WKUP_GPIO0_CLKCTRL
+	** register.
+	*/
+	val=in32(prcm_base + CM_PER_GPIO1_CLKCTRL);
+	val|=CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK;
+	out32(prcm_base + CM_PER_GPIO1_CLKCTRL,val);
+
+	/* Waiting for OPTFCLKEN_GPIO0_GDBCLK field to reflect the written value. */
+	while(CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK !=
+		  (in32( prcm_base + CM_PER_GPIO1_CLKCTRL) &
+				  CM_PER_GPIO1_CLKCTRL_OPTFCLKEN_GPIO_1_GDBCLK));
 
 
 }
@@ -469,6 +462,37 @@ void GPIO1ModuleClkConfig(void)
 void GPIO2ModuleClkConfig(void)
 {
 	//todo
+
+	static char invo_count = 0;
+	uintptr_t prcm_base;
+	uint32_t	val;
+
+	if( invo_count)	//第二次调用直接退出
+		return;
+	invo_count ++;
+
+	prcm_base=mmap_device_io(CM_PRCM_SIZE,PRCM_BASE);
+
+	/* Writing to MODULEMODE field of CM_WKUP_GPIO0_CLKCTRL register. */
+	out32(prcm_base+CM_PER_GPIO2_CLKCTRL,CM_PER_GPIO2_CLKCTRL_MODULEMODE_ENABLE);
+
+	/* Waiting for MODULEMODE field to reflect the written value. */
+	while(CM_PER_GPIO2_CLKCTRL_MODULEMODE_ENABLE !=
+		  (in32(prcm_base + CM_PER_GPIO2_CLKCTRL) &
+				  CM_PER_GPIO2_CLKCTRL_MODULEMODE_ENABLE));
+
+	/*
+	** Writing to OPTFCLKEN_GPIO0_GDBCLK field of CM_WKUP_GPIO0_CLKCTRL
+	** register.
+	*/
+	val=in32(prcm_base + CM_PER_GPIO2_CLKCTRL);
+	val|=CM_PER_GPIO2_CLKCTRL_OPTFCLKEN_GPIO_2_GDBCLK;
+	out32(prcm_base + CM_PER_GPIO2_CLKCTRL,val);
+
+	/* Waiting for OPTFCLKEN_GPIO0_GDBCLK field to reflect the written value. */
+	while(CM_PER_GPIO2_CLKCTRL_OPTFCLKEN_GPIO_2_GDBCLK !=
+		  (in32( prcm_base + CM_PER_GPIO2_CLKCTRL) &
+				  CM_PER_GPIO2_CLKCTRL_OPTFCLKEN_GPIO_2_GDBCLK));
 }
 
 

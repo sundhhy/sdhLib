@@ -66,4 +66,5 @@ void GPIO3ModuleClkConfig(void);
 int InitOutputPin(gpio_cfg *p_cfg);
 int PinOutput(gpio_cfg *p_cfg, char val);
 int DestoryOutputPin(gpio_cfg *p_cfg);
+void dump_gpio_reg( uintptr_t baseAdd);
 #endif /* AM335X_GPIO_H_ */
