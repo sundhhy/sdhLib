@@ -22,6 +22,13 @@ typedef int err_t;
 //参数类错误
 #define ERR_PARAM_BAD						-0x500
 
+//内存类
+#define ERR_MEM_LACK						-0x600
+
+//通讯类
+#define ERR_CMM_ILLEGAL					-0x700
+#define ERR_CMM_CMDERR					-0x701
+#define ERR_CMM_CKECKERR					-0x702
 //以下的错误代码不要再使用了 170714
 #define ERR_MEM_UNAVAILABLE			-6					/* ??????			*/
 
