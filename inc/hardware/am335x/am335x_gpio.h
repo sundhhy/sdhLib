@@ -12,7 +12,7 @@
 #include <arm/omap2420.h>
 #include "lw_oopc.h"
 #include "basis/sdhError.h"
-#include "hardware_cfg.h"
+#include "hd_conf_def.h"
 #include "am335x.h"
 #include <sys/neutrino.h>
 #include <pthread.h>

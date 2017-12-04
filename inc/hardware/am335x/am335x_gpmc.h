@@ -13,7 +13,7 @@
 #include "lw_oopc.h"
 #include "basis/sdhDebug.h"
 #include "basis/sdhError.h"
-#include "hardware_cfg.h"
+#include "hd_conf_def.h"
 
 //-- GPMC_CONFIG1
 #define SET_DEVICE_TYPE(regval, setval)			\
