@@ -45,7 +45,9 @@ uint16_t Crc16(uint8_t* puchMsg, uint16_t usDataLen)
 	uint8_t uchCRCHi=0xff;
 	uint8_t uchCRCLo=0xff;
 	uint16_t uIndex;
-
+	uint8_t		*p = puchMsg;
+	uint16_t	old_len = usDataLen;
+	
 	while(usDataLen--)
 	{
 		uIndex=uchCRCHi^*(puchMsg++);
