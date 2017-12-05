@@ -12,7 +12,7 @@
 #include <arm/omap2420.h>
 #include "lw_oopc.h"
 #include "basis/sdhError.h"
-#include "hardware_cfg.h"
+#include "hd_conf_def.h"
 #include "am335x.h"
 #include <sys/neutrino.h>
 #include <pthread.h>
@@ -66,4 +66,5 @@ void GPIO3ModuleClkConfig(void);
 int InitOutputPin(gpio_cfg *p_cfg);
 int PinOutput(gpio_cfg *p_cfg, char val);
 int DestoryOutputPin(gpio_cfg *p_cfg);
+void dump_gpio_reg( uintptr_t baseAdd);
 #endif /* AM335X_GPIO_H_ */

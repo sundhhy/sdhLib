@@ -10,7 +10,7 @@
 #else 
 	#define DPRINTF(format, arg...) 
 #endif
-
+#define DEBUG_SWITCH
 #ifdef    DEBUG_SWITCH
 #define TRACE_INFO(fmt,args...) printf(fmt, ##args)
 #else

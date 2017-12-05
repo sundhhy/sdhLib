@@ -67,20 +67,28 @@ void getCompileDate(uint8_t* pDest,uint8_t dsize)
 int GetCompileYear(void)
 {
 	char *p = __DATE__;
-	
+	//Dec  4 2017
 	int spacenum, year;
 	
 	
 	spacenum = 0;
-	while(1)
+	
+	
+	while(*p)
 	{
-		if( *p++ == ' ')
-			spacenum ++;
-		if( spacenum == 2)
-			break;
+		p++;
+		
 		
 	}
 	
+	while(1)
+	{
+		if( *p == ' ')
+			break;
+		else
+			p--;
+		
+	}
 
 	year = atoi(p);
 	
@@ -120,4 +128,24 @@ unsigned char GetCompileDay( void)
 	
 
 	return day;
+}
+void GetCompileTime( uint8_t *h, uint8_t *m, uint8_t *s) 
+{
+	char temp [] = __TIME__;
+	char *p = temp;
+	//22:06:00
+
+	
+	*(temp + 2) = 0;
+	*(temp + 5) = 0;
+	p = temp;
+	*h = atoi(p);
+	
+	p = temp + 3;
+	*m = atoi(p);
+	
+	p = temp + 6;
+	*s = atoi(p);
+	
+
 }

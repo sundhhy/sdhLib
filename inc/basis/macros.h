@@ -26,5 +26,6 @@ int GetCompileYear(void);
 void getCompileDate(uint8_t* pDest,uint8_t dsize);
 unsigned char GetCompileMoth( void);
 unsigned char GetCompileDay( void);
+void GetCompileTime( uint8_t *h, uint8_t *m, uint8_t *s) ;
 
 #endif
