@@ -18,6 +18,7 @@ typedef int err_t;
 //操作类
 #define ERR_OPT_FAILED					-0x400
 #define ERR_OPT_REPEAT					-0x401				//重复的操作
+#define ERR_OPT_ILLEGAL					-0x402				//重复的操作
 
 //参数类错误
 #define ERR_PARAM_BAD						-0x500

@@ -142,11 +142,11 @@ int Sem_init(sem_t *sem)
 			osSemaphoreWait( sid_Sem5, 0 );
 			break;
 		case 6:
-			sid_Sem6 = osSemaphoreCreate (osSemaphore(rtxSemaphore6), 1);
+			sid_Sem6 = osSemaphoreCreate(osSemaphore(rtxSemaphore6), 1);
 			if (!sid_Sem6) {
 				ret = ERR_OSRSU_UNAVAILABLE;
 			}
-			osSemaphoreWait( sid_Sem6, 0 );
+			ret = osSemaphoreWait( sid_Sem6, 0 );
 			break;
 		default:
 			ret = ERR_BAD_PARAMETER;
@@ -188,33 +188,34 @@ int Sem_wait(sem_t *sem, int ms)
 int Sem_post(sem_t *sem)
 {
 	sem_t s = *sem;
+	int	ret = 0;
 	switch( s)
 	{
 		case 0:
-			osSemaphoreRelease( sid_Sem0);
+			ret = osSemaphoreRelease( sid_Sem0);
 			break;
 		case 1:
-			osSemaphoreRelease( sid_Sem1);
+			ret = osSemaphoreRelease( sid_Sem1);
 			break;
 		case 2:
-			osSemaphoreRelease( sid_Sem2);
+			ret = osSemaphoreRelease( sid_Sem2);
 			break;
 		case 3:
-			osSemaphoreRelease( sid_Sem3);
+			ret = osSemaphoreRelease( sid_Sem3);
 			break;
 		case 4:
-			osSemaphoreRelease( sid_Sem4);
+			ret = osSemaphoreRelease( sid_Sem4);
 			break;
 		case 5:
-			osSemaphoreRelease( sid_Sem5);
+			ret = osSemaphoreRelease( sid_Sem5);
 		case 6:
-			osSemaphoreRelease( sid_Sem6);
+			ret = osSemaphoreRelease( sid_Sem6);
 			break;
 		default:
 			return ERR_BAD_PARAMETER;
 		
 	}
-	return RET_OK;
+	return ret;
 }
 
 
