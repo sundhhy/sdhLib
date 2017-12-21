@@ -16,6 +16,4 @@
 typedef struct timespec os_time_t;
 typedef pthread_mutex_t mutext_t;
 
-
-
 #endif /* OS_DEPEND_H_ */

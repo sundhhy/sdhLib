@@ -268,7 +268,7 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 		return ( &cthis->isr_event);
 	}
 
-	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
+//	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
 
 	return NULL;
 

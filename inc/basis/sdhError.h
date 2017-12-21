@@ -11,6 +11,7 @@ typedef int err_t;
 #define ERR_ALREADY_EXIST				-0x103
 //设备类错误
 #define ERR_DEV_UNAVAILABLE				-0x200		//
+#define ERR_DEV_FAILED					-0x201
 
 //资源类错误
 #define ERR_RSU_UNAVAILABLE				-0x300
