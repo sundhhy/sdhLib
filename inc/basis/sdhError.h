@@ -12,6 +12,7 @@ typedef int err_t;
 //设备类错误
 #define ERR_DEV_UNAVAILABLE				-0x200		//
 #define ERR_DEV_FAILED					-0x201
+
 //资源类错误
 #define ERR_RSU_UNAVAILABLE				-0x300
 #define ERR_RSU_BUSY					-0x301
