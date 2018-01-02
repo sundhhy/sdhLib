@@ -42,7 +42,7 @@ CLASS(Drive_Gpio)
 	uintptr_t			gpio_vbase;
 	gpio_cfg			*config;
 	pthread_t			pid;
-	uint32_t			states;
+	volatile uint32_t			states;
 	struct sigevent		isr_event;
 
 };

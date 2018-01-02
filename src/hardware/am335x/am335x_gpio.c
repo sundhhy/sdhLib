@@ -10,6 +10,8 @@
 #include <sys/mman.h>
 #include <hw/inout.h>
 #include <assert.h>
+#include <atomic.h>
+
 
 #include "hardware/am335x/hw_cm_wkup.h"
 #include "hardware/am335x/hw_cm_per.h"
@@ -258,8 +260,8 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 	uint32_t stats;
 	stats = in32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line));
 //	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
-	cthis->states = stats;
 
+//	cthis->states = stats;
 	if( stats & ( 1<< cthis->config->pin_number))
 	{
 //		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
@@ -269,6 +271,9 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 		cthis->irq_handle( cthis->irq_handle_arg);
 #endif
 //		Dubug_info.irq_count[ cthis->config->instance] ++;
+
+		atomic_set(&cthis->states, 1);
+
 		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
 
 
@@ -284,15 +289,32 @@ static void *Intr_thread(void *arg)
 {
 	Drive_Gpio 		*cthis = ( Drive_Gpio *)arg ;
 //	gpio_cfg 		*config = cthis->config;
-//	uint32_t stats = 0;
+//	uint32_t 		reg_val = 0;
 	cthis->irq_id = InterruptAttach_r (GpioIntNum[cthis->config->intr_line][cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
 
 	pthread_detach(pthread_self());
 	while(1) {
 		InterruptWait (NULL, NULL);
-		if( cthis->states & ( 1<< cthis->config->pin_number)) {
+		if( cthis->states) {
+			atomic_clr(&cthis->states, 1);
+
 			cthis->irq_handle( cthis->irq_handle_arg);
 		}
+//		else
+//		{
+//			//有时候会漏中断
+//			reg_val = in32(cthis->gpio_vbase + GPIO_DATAOUT);
+//			reg_val = reg_val & ( 1<< cthis->config->pin_number);
+//
+//			if(cthis->config->intr_type & RISINGDETECT) {
+//				if(reg_val)
+//					cthis->irq_handle( cthis->irq_handle_arg);
+//			}
+//			else if(cthis->config->intr_type & FALLINGDETECT) {
+//				if(reg_val == 0)
+//					cthis->irq_handle( cthis->irq_handle_arg);
+//			}
+//		}
 
 	}
 
