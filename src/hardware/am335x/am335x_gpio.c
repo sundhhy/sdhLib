@@ -10,6 +10,8 @@
 #include <sys/mman.h>
 #include <hw/inout.h>
 #include <assert.h>
+#include <atomic.h>
+
 
 #include "hardware/am335x/hw_cm_wkup.h"
 #include "hardware/am335x/hw_cm_per.h"
@@ -110,23 +112,29 @@ static err_t gpio_init(Drive_Gpio *t)
 		}
 		else
 		{
-			//禁止其他类型
+			//
 			tmp_reg = in32( cthis->gpio_vbase + GPIO_DETECT(i));
 			tmp_reg &= ~(1 << config->pin_number);
 			out32(cthis->gpio_vbase + GPIO_DETECT(i), tmp_reg);
 		}
 	}
 
-	intrNum = GpioIntNum[ config->intr_line][ config->pin_group];
-	init_crtl = mmap_device_io(0x1000,SOC_AINTC_REGS);//映射中断控制器
-	out32(init_crtl+INTC_ILR( intrNum),(( config->intrPrio << 0x02 )& INTC_ILR_PRIORITY)|0);//设置优先级
-	out32(init_crtl+INTC_MIR_CLEAR( intrNum >>5),(1<<(intrNum&0x1F)));//使能GPIO0端口中断
-	munmap_device_io(init_crtl, 0x1000);
+
+//	if(config->clk_init)
+	{
+		intrNum = GpioIntNum[ config->intr_line][ config->pin_group];
+		init_crtl = mmap_device_io(0x1000,SOC_AINTC_REGS);//映射中断控制器
+		out32(init_crtl+INTC_ILR( intrNum),(( config->intrPrio << 0x02 )& INTC_ILR_PRIORITY)|0);//设置优先级
+		out32(init_crtl+INTC_MIR_CLEAR( intrNum >>5),(1<<(intrNum&0x1F)));//使能GPIO0端口中断
+		munmap_device_io(init_crtl, 0x1000);
+	}
+
 
 #ifdef DEBUG_GPIO
 	dump_gpio_reg( cthis->gpio_vbase);
 #endif
-	SIGEV_INTR_INIT( &cthis->isr_event );
+	SIGEV_INTR_INIT(&cthis->isr_event );
+
 #if INTR_THREAD == 1
 	pthread_create (&cthis->pid, NULL, Intr_thread, cthis);
 #else
@@ -252,8 +260,8 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 	uint32_t stats;
 	stats = in32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line));
 //	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
-	cthis->states = stats;
 
+//	cthis->states = stats;
 	if( stats & ( 1<< cthis->config->pin_number))
 	{
 //		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
@@ -263,13 +271,16 @@ const struct sigevent *gpioExtInteIsr (void *area, int id)
 		cthis->irq_handle( cthis->irq_handle_arg);
 #endif
 //		Dubug_info.irq_count[ cthis->config->instance] ++;
+
+		atomic_set(&cthis->states, 1);
+
 		out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), 1 << cthis->config->pin_number);
 
-		return ( &cthis->isr_event);
+
 	}
 
-	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
-
+//	out32( cthis->gpio_vbase + GPIO_GPIO_IRQSTATUS( cthis->config->intr_line), stats);
+	return ( &cthis->isr_event);
 	return NULL;
 
 }
@@ -278,16 +289,32 @@ static void *Intr_thread(void *arg)
 {
 	Drive_Gpio 		*cthis = ( Drive_Gpio *)arg ;
 //	gpio_cfg 		*config = cthis->config;
-//	uint32_t stats = 0;
-
-	cthis->irq_id = InterruptAttach_r ( GpioIntNum[cthis->config->intr_line][cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
+//	uint32_t 		reg_val = 0;
+	cthis->irq_id = InterruptAttach_r (GpioIntNum[cthis->config->intr_line][cthis->config->pin_group], gpioExtInteIsr, cthis, 1, _NTO_INTR_FLAGS_END );
 
 	pthread_detach(pthread_self());
 	while(1) {
 		InterruptWait (NULL, NULL);
-		if( cthis->states & ( 1<< cthis->config->pin_number)) {
+		if( cthis->states) {
+			atomic_clr(&cthis->states, 1);
+
 			cthis->irq_handle( cthis->irq_handle_arg);
 		}
+//		else
+//		{
+//			//有时候会漏中断
+//			reg_val = in32(cthis->gpio_vbase + GPIO_DATAOUT);
+//			reg_val = reg_val & ( 1<< cthis->config->pin_number);
+//
+//			if(cthis->config->intr_type & RISINGDETECT) {
+//				if(reg_val)
+//					cthis->irq_handle( cthis->irq_handle_arg);
+//			}
+//			else if(cthis->config->intr_type & FALLINGDETECT) {
+//				if(reg_val == 0)
+//					cthis->irq_handle( cthis->irq_handle_arg);
+//			}
+//		}
 
 	}
 
