@@ -68,10 +68,9 @@ int GetCompileYear(void)
 {
 	char *p = __DATE__;
 	//Dec  4 2017
-	int spacenum, year;
+	int year;
 	
 	
-	spacenum = 0;
 	
 	
 	while(*p)
