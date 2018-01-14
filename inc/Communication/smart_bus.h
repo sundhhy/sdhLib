@@ -31,6 +31,9 @@
 #define SMBUS_CMD_WRITE		0xFD		//读写指令的命令字都是一样的，通过子命令来区别
 #define SMBUS_AI_CONFIG		0xA2
 #define SMBUS_AI_READ		0xA4
+#	define	AI_READ_ENGVAL	0x80
+#	define	AI_READ_SMPVAL	0x81
+#	define	CDT_CHN			5
 
 //扩展命令:是使用基础评论来实现的功能
 //#define SECMD_RD_SIGTYPE		0xe0
@@ -95,9 +98,15 @@ int	SmBus_Query(IN int chn, OUT uint8_t *frame, int f_size);
 int	SmBus_decode(IN uint8_t cmd, IN uint8_t *frame, OUT void *result_buf, int buf_szie);
 int	SmBus_Read(IN int chn, IN uint8_t addr, IN uint8_t len, OUT uint8_t	*frame_buf, int buf_size);
 int	SmBus_Write(IN int chn, IN uint8_t addr, IN uint8_t len, IN uint8_t *wr_buf, OUT uint8_t	*frame_buf, int buf_size);
-int SmBus_AI_Read(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
+int SmBus_AI_Read(IN uint8_t chn, IN uint8_t val_type, OUT uint8_t *frame_buf, int buf_size);
 int SmBus_rd_signal_type(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
-int SmBus_rd_h_l_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_DO_output(IN uint8_t chn, IN uint8_t val, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_Read_DO(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
+//int SmBus_rd_h_l_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 int SmBus_AI_config(IN uint8_t chn, SmBus_conf_t *conf, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_WR_hig_limit(IN uint8_t chn, uint16_t *hig_limt, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_WR_low_limit(IN uint8_t chn, uint16_t *low_limt, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_RD_hig_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_RD_low_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 #endif
 //------------ End of file ---------------------------

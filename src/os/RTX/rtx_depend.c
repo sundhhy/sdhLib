@@ -4,12 +4,49 @@
  *  Created on: 2017-1-13
  *      Author: Administrator
  */
+
+
+//============================================================================//
+//            G L O B A L   D E F I N I T I O N S                             //
+//============================================================================//
 #include "os/os_depend.h"
 #include "cmsis_os.h"                                           // CMSIS RTOS header file
 #include <assert.h>
 #include <stdio.h>
 #include "basis/sdhError.h"
+#include "basis/macros.h"
+//------------------------------------------------------------------------------
+// const defines
+//------------------------------------------------------------------------------
+#define MAX_NUM_SEM			10
+//------------------------------------------------------------------------------
+// module global vars
+//------------------------------------------------------------------------------
 
+
+//------------------------------------------------------------------------------
+// global function prototypes
+//------------------------------------------------------------------------------
+
+//============================================================================//
+//            P R I V A T E   D E F I N I T I O N S                           //
+//============================================================================//
+
+//------------------------------------------------------------------------------
+// const defines
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// local types
+//------------------------------------------------------------------------------
+struct  {
+	uint8_t	set_used_sems[2];
+	uint16_t	none;
+	
+}rtx_sem_mgr;
+//------------------------------------------------------------------------------
+// local vars
+//------------------------------------------------------------------------------
 osSemaphoreId sid_Sem0;                             
 osSemaphoreDef(rtxSemaphore0); 
 
@@ -30,6 +67,44 @@ osSemaphoreDef(rtxSemaphore5);
 
 osSemaphoreId sid_Sem6;                             
 osSemaphoreDef(rtxSemaphore6);
+
+
+osSemaphoreId sid_Sem7;                             
+osSemaphoreDef(rtxSemaphore7); 
+
+osSemaphoreId sid_Sem8;                             
+osSemaphoreDef(rtxSemaphore8); 
+
+osSemaphoreId sid_Sem9;                             
+osSemaphoreDef(rtxSemaphore9); 
+
+osSemaphoreId sid_Sem10;                             
+osSemaphoreDef(rtxSemaphore10);
+
+//------------------------------------------------------------------------------
+// local function prototypes
+//------------------------------------------------------------------------------
+
+
+
+//============================================================================//
+//            P U B L I C   F U N C T I O N S                                 //
+//============================================================================//
+
+//=========================================================================//
+//                                                                         //
+//          P R I V A T E   D E F I N I T I O N S                          //
+//                                                                         //
+//=========================================================================//
+/// \name Private Functions
+/// \{
+
+
+
+
+
+
+
 
 void delay_s(int sec)
 {
@@ -93,6 +168,23 @@ int DiffTimes_ms( os_time_t *p_start, os_time_t *P_end)
 
 }
 
+int Alloc_sem(void)
+{
+	int i = 0;
+	for(i = 0; i < MAX_NUM_SEM; i++)
+	{
+		if(CHECK_BIT(rtx_sem_mgr.set_used_sems, i) == 0)
+		{
+			SDH_SET_BIT(rtx_sem_mgr.set_used_sems, i);
+			return i;
+		}
+		
+	}
+	
+	return -1;
+	
+}
+
 int Sem_init(sem_t *sem)
 {
 	sem_t s = *sem;
@@ -148,6 +240,34 @@ int Sem_init(sem_t *sem)
 			}
 			ret = osSemaphoreWait( sid_Sem6, 0 );
 			break;
+		case 7:
+			sid_Sem7 = osSemaphoreCreate (osSemaphore(rtxSemaphore7), 1);
+			if (!sid_Sem7) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem7, 0 );
+			break;
+		case 8:
+			sid_Sem8 = osSemaphoreCreate (osSemaphore(rtxSemaphore8), 1);
+			if (!sid_Sem8) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem8, 0 );
+			break;
+		case 9:
+			sid_Sem9 = osSemaphoreCreate (osSemaphore(rtxSemaphore9), 1);
+			if (!sid_Sem9) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem9, 0 );
+			break;
+		case 10:
+			sid_Sem10 = osSemaphoreCreate(osSemaphore(rtxSemaphore10), 1);
+			if (!sid_Sem10) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			ret = osSemaphoreWait( sid_Sem10, 0 );
+			break;
 		default:
 			ret = ERR_BAD_PARAMETER;
 			break;
@@ -178,6 +298,14 @@ int Sem_wait(sem_t *sem, int ms)
 			return osSemaphoreWait( sid_Sem5, ms );
 		case 6:
 			return osSemaphoreWait( sid_Sem6, ms );
+		case 7:
+			return osSemaphoreWait( sid_Sem7, ms );
+		case 8:
+			return osSemaphoreWait( sid_Sem8, ms );
+		case 9:
+			return osSemaphoreWait( sid_Sem9, ms );
+		case 10:
+			return osSemaphoreWait( sid_Sem10, ms );
 		default:
 			break;
 		

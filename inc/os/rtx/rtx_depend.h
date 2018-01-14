@@ -13,7 +13,7 @@
 //#include "osObjects.h"                      // RTOS object definitions
 typedef unsigned int os_time_t;
 typedef int mutext_t;
-typedef uint8_t sem_t;
+typedef int sem_t;
 
 
 #endif /* OS_DEPEND_H_ */
