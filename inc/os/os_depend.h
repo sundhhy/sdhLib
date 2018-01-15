@@ -35,6 +35,7 @@ int Mutex_lock( mutext_t *mutex);
 int Mutex_trylock( mutext_t *mutex);
 int Mutex_unlock( mutext_t *mutex);
 
+int Alloc_sem(void);
 int Sem_init(sem_t *sem);
 int Sem_wait(sem_t *sem, int ms);
 int Sem_post(sem_t *sem);

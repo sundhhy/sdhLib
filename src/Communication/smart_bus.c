@@ -76,11 +76,11 @@ int SmBus_rd_signal_type(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
 	return SmBus_Read(chn, 0x61,1, frame_buf, buf_size);
 }
 
-int SmBus_rd_h_l_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
-{
-	
-	return SmBus_Read(chn, 0x72,4, frame_buf, buf_size);
-}
+//int SmBus_rd_h_l_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
+//{
+//	
+//	return SmBus_Read(chn, 0x72,4, frame_buf, buf_size);
+//}
 
 int	SmBus_Read(IN int chn, IN uint8_t addr, IN uint8_t len, OUT uint8_t	*frame_buf, int buf_size)
 {
@@ -110,32 +110,32 @@ int	SmBus_Write(IN int chn, IN uint8_t addr, IN uint8_t len, IN uint8_t *wr_buf,
 {
 	smBus_head_t	*s_head = (smBus_head_t *)frame_buf;
 	uint8_t			*playload = frame_buf + sizeof(smBus_head_t);
-	smBus_tail_t	*s_tail = (smBus_tail_t *)(playload + len * 2);
+	smBus_tail_t	*s_tail = (smBus_tail_t *)(playload + 4 + len * 2 );
 	uint8_t			sb_xor = 0;
 	uint8_t			i = 0;
 	uint8_t			p_len = len * 2;
-	if(buf_size < (7 + p_len))
+	if(buf_size < (11 + p_len))
 		return -1;
 	
 	s_head->cmd = SMBUS_CMD_READ;
 	s_head->src_addr = SMBUS_SRC_ADDR;
 	s_head->dst_addr = chn;
-	s_head->len = 0xB4;
+	s_head->len = 0xB0 | (p_len + 4);
 	playload[0] = 0x85;
 	playload[1] = SMBUS_BUILD_BYTE(0x80, len);
-	playload[2] = SMBUS_BUILD_BYTE(0x80, addr >> 4);
-	playload[3] = SMBUS_BUILD_BYTE(0x80, addr);
+	playload[2] = SMBUS_BUILD_BYTE(0x80, addr );
+	playload[3] = SMBUS_BUILD_BYTE(0x80, addr >> 4);
 	
 	for(i = 0; i < len; i ++)
 	{
-		playload[4 + i * 2] = SMBUS_BUILD_BYTE(0x80, wr_buf[i] >> 4);
-		playload[4 + i * 2 + 1] = SMBUS_BUILD_BYTE(0x80, wr_buf[i]);
+		playload[4 + i * 2] = SMBUS_BUILD_BYTE(0x80, wr_buf[i] );
+		playload[4 + i * 2 + 1] = SMBUS_BUILD_BYTE(0x80, wr_buf[i] >> 4);
 	}
 	
 	sb_xor = SmBus_crc(frame_buf);
 	SmBus_Tail(sb_xor, s_tail);
 	
-	return (7 + p_len);
+	return (11 + p_len);
 }
 
 
@@ -152,7 +152,7 @@ int SmBus_AI_config(IN uint8_t chn, SmBus_conf_t *conf, OUT uint8_t *frame_buf, 
 	
 	s_head->cmd = SMBUS_AI_CONFIG;
 	s_head->src_addr = SMBUS_SRC_ADDR;
-	s_head->dst_addr = chn;
+	s_head->dst_addr = chn | SMBUS_CHN_AI;
 	s_head->len = 0xBA;
 	playload[0] = SMBUS_BUILD_BYTE(0x80, conf->signal_type);
 	playload[1] = SMBUS_BUILD_BYTE(0x80, conf->decimal);
@@ -161,10 +161,50 @@ int SmBus_AI_config(IN uint8_t chn, SmBus_conf_t *conf, OUT uint8_t *frame_buf, 
 
 	sb_xor = SmBus_crc(frame_buf);
 	SmBus_Tail(sb_xor, s_tail);
-	return 19;
+	return 17;
 }
+
+int	SmBus_WR_hig_limit(IN uint8_t chn, uint16_t *hig_limie, OUT uint8_t *frame_buf, int buf_size)
+{
+		
+	return SmBus_Write(chn, 0x6e,2, (uint8_t *)hig_limie, frame_buf, buf_size);
+}
+int	SmBus_DO_output(IN uint8_t chn, IN uint8_t val, OUT uint8_t *frame_buf, int buf_size)
+{
+	uint8_t		do_val = val;
+//	if(val)
+//		do_val = 3;
+//	else
+//		do_val = 0;
+	return SmBus_Write(0x51, 0x6b, 1, (uint8_t *)&do_val, frame_buf, buf_size);
+}
+
+int	SmBus_Read_DO(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
+{
+	
+	return SmBus_Read(0x51, 0x6b, 1, frame_buf, buf_size);
+}
+
+int	SmBus_WR_low_limit(IN uint8_t chn, uint16_t *low_limie, OUT uint8_t *frame_buf, int buf_size)
+{
+		
+	return SmBus_Write(chn, 0x78,2, (uint8_t *)low_limie, frame_buf, buf_size);
+}
+
+int	SmBus_RD_hig_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
+{
+		
+	return SmBus_Read(chn, 0x6e, 2, frame_buf, buf_size);
+}
+
+int	SmBus_RD_low_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
+{
+		
+	return SmBus_Read(chn, 0x78, 2, frame_buf, buf_size);
+}
+
 //chn为5的时候表示读取冷端温度
-int SmBus_AI_Read(IN uint8_t chn,  OUT uint8_t *frame_buf, int buf_size)
+int SmBus_AI_Read(IN uint8_t chn, IN uint8_t val_type, OUT uint8_t *frame_buf, int buf_size)
 {
 	smBus_head_t	*s_head = (smBus_head_t *)frame_buf;
 	uint8_t			*playload = frame_buf + sizeof(smBus_head_t);
@@ -175,13 +215,21 @@ int SmBus_AI_Read(IN uint8_t chn,  OUT uint8_t *frame_buf, int buf_size)
 	
 	s_head->cmd = SMBUS_AI_READ;
 	s_head->src_addr = SMBUS_SRC_ADDR;
-	s_head->dst_addr = chn;
-	if(chn == 5)
+	s_head->dst_addr = chn | SMBUS_CHN_AI;
+	
+	
+	s_head->len = 0xB1;
+	if(chn == 5)	
+	{
 		s_head->len = 0xBF;
-	else
-		s_head->len = 0xB1;
-	playload[0] = 0x80;		//只支持采样值
+		
+	}
+	playload[0] = val_type;		//只支持采样值
+	
 	sb_xor = SmBus_crc(frame_buf);
+	
+	
+	
 	SmBus_Tail(sb_xor, s_tail);
 	return 8;
 	
@@ -241,6 +289,12 @@ static uint8_t SmBus_crc(uint8_t	*frame)
 	uint8_t			i;
 	uint8_t			f_len = (s_head->len & 0x0f) + 4;
 	
+	if(s_head->len == 0xbf)
+	{
+		f_len = 5;
+		if((s_head->cmd & 0xf0) == 0xc0)
+			f_len = 9;
+	}
 	for(i = 0; i < f_len; i ++)
 		check_xor ^= frame[i];
 	return check_xor;
