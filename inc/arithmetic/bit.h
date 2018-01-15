@@ -4,6 +4,11 @@
 #define T Bit_T
 typedef struct T *T;
 extern T   Bit_new   (int length);
+
+uint8_t Check_bit(uint8_t *data, int bit);
+void Clear_bit(uint8_t *data, int bit);
+void Set_bit(uint8_t *data, int bit);
+
 extern int Bit_length(T set);
 extern int Bit_count (T set);
 extern void Bit_free(T *set);
