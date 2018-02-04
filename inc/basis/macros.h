@@ -12,9 +12,9 @@
 #define OUT
 
 #define LINE_DIF(line_base) (__LINE__ - line_base)
-#define CHECK_BIT( bitmap, num) ( ( (uint8_t *)bitmap)[ num >> 3] & ( 1 << ( num & 0x7)) )
-#define SDH_SET_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num >> 3] = ( (uint8_t *)bitmap)[ num/8] | ( 1 << ( num & 0x7))
-#define SDH_CLR_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num>> 3] =  ( (uint8_t *)bitmap)[ num/8] & ~( 1 << ( num & 0x7))
+//#define CHECK_BIT( bitmap, num) ( ( (uint8_t *)bitmap)[ num >> 3] & ( 1 << ( num & 0x7)) )
+//#define SDH_SET_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num >> 3] = ( (uint8_t *)bitmap)[ num/8] | ( 1 << ( num & 0x7))
+//#define SDH_CLR_BIT( bitmap, num) ( (uint8_t *)bitmap)[ num>> 3] =  ( (uint8_t *)bitmap)[ num/8] & ~( 1 << ( num & 0x7))
 
 #define container_of(ptr, type, member) ((type *)( (char *)ptr - offsetof(type,member) ))
 #define MEMBER_OFFSET(s, m) offsetof(s,m)

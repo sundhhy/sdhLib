@@ -15,10 +15,12 @@
 #include <stdio.h>
 #include "basis/sdhError.h"
 #include "basis/macros.h"
+#include "arithmetic/bit.h"
+
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define MAX_NUM_SEM			10
+#define MAX_NUM_SEM			16
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
@@ -71,7 +73,7 @@ osSemaphoreDef(rtxSemaphore6);
 
 osSemaphoreId sid_Sem7;                             
 osSemaphoreDef(rtxSemaphore7); 
-
+#if MAX_NUM_SEM == 16
 osSemaphoreId sid_Sem8;                             
 osSemaphoreDef(rtxSemaphore8); 
 
@@ -80,6 +82,23 @@ osSemaphoreDef(rtxSemaphore9);
 
 osSemaphoreId sid_Sem10;                             
 osSemaphoreDef(rtxSemaphore10);
+
+osSemaphoreId sid_Sem11;                             
+osSemaphoreDef(rtxSemaphore11);
+
+osSemaphoreId sid_Sem12;                             
+osSemaphoreDef(rtxSemaphore12);
+
+osSemaphoreId sid_Sem13;                             
+osSemaphoreDef(rtxSemaphore13);
+
+osSemaphoreId sid_Sem14;                             
+osSemaphoreDef(rtxSemaphore14);
+
+osSemaphoreId sid_Sem15;                             
+osSemaphoreDef(rtxSemaphore15);
+#endif
+
 
 //------------------------------------------------------------------------------
 // local function prototypes
@@ -173,9 +192,9 @@ int Alloc_sem(void)
 	int i = 0;
 	for(i = 0; i < MAX_NUM_SEM; i++)
 	{
-		if(CHECK_BIT(rtx_sem_mgr.set_used_sems, i) == 0)
+		if(Check_bit(rtx_sem_mgr.set_used_sems, i) == 0)
 		{
-			SDH_SET_BIT(rtx_sem_mgr.set_used_sems, i);
+			Set_bit(rtx_sem_mgr.set_used_sems, i);
 			return i;
 		}
 		
@@ -247,6 +266,7 @@ int Sem_init(sem_t *sem)
 			}
 			osSemaphoreWait( sid_Sem7, 0 );
 			break;
+			#if MAX_NUM_SEM == 16
 		case 8:
 			sid_Sem8 = osSemaphoreCreate (osSemaphore(rtxSemaphore8), 1);
 			if (!sid_Sem8) {
@@ -266,8 +286,44 @@ int Sem_init(sem_t *sem)
 			if (!sid_Sem10) {
 				ret = ERR_OSRSU_UNAVAILABLE;
 			}
-			ret = osSemaphoreWait( sid_Sem10, 0 );
+			osSemaphoreWait( sid_Sem10, 0 );
 			break;
+		case 11:
+			sid_Sem11 = osSemaphoreCreate(osSemaphore(rtxSemaphore11), 1);
+			if (!sid_Sem11) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem11, 0 );
+			break;
+		case 12:
+			sid_Sem12 = osSemaphoreCreate(osSemaphore(rtxSemaphore12), 1);
+			if (!sid_Sem12) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem12, 0 );
+			break;
+		case 13:
+			sid_Sem13 = osSemaphoreCreate(osSemaphore(rtxSemaphore13), 1);
+			if (!sid_Sem13) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem13, 0 );
+			break;
+		case 14:
+			sid_Sem14 = osSemaphoreCreate(osSemaphore(rtxSemaphore14), 1);
+			if (!sid_Sem14) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem14, 0 );
+			break;
+		case 15:
+			sid_Sem15 = osSemaphoreCreate(osSemaphore(rtxSemaphore15), 1);
+			if (!sid_Sem15) {
+				ret = ERR_OSRSU_UNAVAILABLE;
+			}
+			osSemaphoreWait( sid_Sem15, 0 );
+			break;
+			#endif
 		default:
 			ret = ERR_BAD_PARAMETER;
 			break;
@@ -300,12 +356,24 @@ int Sem_wait(sem_t *sem, int ms)
 			return osSemaphoreWait( sid_Sem6, ms );
 		case 7:
 			return osSemaphoreWait( sid_Sem7, ms );
+		#if MAX_NUM_SEM == 16
 		case 8:
 			return osSemaphoreWait( sid_Sem8, ms );
 		case 9:
 			return osSemaphoreWait( sid_Sem9, ms );
 		case 10:
 			return osSemaphoreWait( sid_Sem10, ms );
+		case 11:
+			return osSemaphoreWait( sid_Sem11, ms );
+		case 12:
+			return osSemaphoreWait( sid_Sem12, ms );
+		case 13:
+			return osSemaphoreWait( sid_Sem13, ms );
+		case 14:
+			return osSemaphoreWait( sid_Sem14, ms );
+		case 15:
+			return osSemaphoreWait( sid_Sem15, ms );
+		#endif
 		default:
 			break;
 		
@@ -339,6 +407,35 @@ int Sem_post(sem_t *sem)
 		case 6:
 			ret = osSemaphoreRelease( sid_Sem6);
 			break;
+		case 7:
+			ret = osSemaphoreRelease( sid_Sem7);
+			break;
+		#if MAX_NUM_SEM == 16
+		case 8:
+			ret = osSemaphoreRelease( sid_Sem8);
+			break;
+		case 9:
+			ret = osSemaphoreRelease( sid_Sem9);
+			break;
+		case 10:
+			ret = osSemaphoreRelease( sid_Sem10);
+			break;
+		case 11:
+			ret = osSemaphoreRelease( sid_Sem11);
+			break;
+		case 12:
+			ret = osSemaphoreRelease( sid_Sem12);
+			break;
+		case 13:
+			ret = osSemaphoreRelease( sid_Sem13);
+			break;
+		case 14:
+			ret = osSemaphoreRelease( sid_Sem14);
+			break;
+		case 15:
+			ret = osSemaphoreRelease( sid_Sem15);
+			break;
+		#endif
 		default:
 			return ERR_BAD_PARAMETER;
 		
