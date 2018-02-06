@@ -4,7 +4,8 @@
 typedef int err_t;
 
 #define RET_OK						0
-#define RET_FAILED				-1
+
+#define RET_FAILED						-1
 
 #define ERR_BEEN_INSTALL				-0x100		//已经被初始化过了，可以通过卸载来去除这个错误
 #define ERR_NOT_EXIST					-0x101
