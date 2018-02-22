@@ -28,10 +28,14 @@ typedef int err_t;
 //内存类
 #define ERR_MEM_LACK						-0x600
 
+//文件类
+#define ERR_FS_NOT_READY				-0x700  //文件还不可用，可能还在被擦除
+
 //通讯类
 #define ERR_CMM_ILLEGAL					-0x700
 #define ERR_CMM_CMDERR					-0x701
 #define ERR_CMM_CKECKERR					-0x702
+#define ERR_CMM_ADDR_ERR					-0x703
 
 //文件系统类
 #define ERR_FS_OPEN_FAIL				-0x800
