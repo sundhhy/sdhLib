@@ -257,7 +257,7 @@ int Sem_init(sem_t *sem)
 			if (!sid_Sem6) {
 				ret = ERR_OSRSU_UNAVAILABLE;
 			}
-			ret = osSemaphoreWait( sid_Sem6, 0 );
+			osSemaphoreWait( sid_Sem6, 0 );
 			break;
 		case 7:
 			sid_Sem7 = osSemaphoreCreate (osSemaphore(rtxSemaphore7), 1);

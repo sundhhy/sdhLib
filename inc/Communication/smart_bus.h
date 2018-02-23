@@ -104,8 +104,8 @@ int	SmBus_DO_output(IN uint8_t chn, IN uint8_t val, OUT uint8_t *frame_buf, int 
 int	SmBus_Read_DO(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 //int SmBus_rd_h_l_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 int SmBus_AI_config(IN uint8_t chn, SmBus_conf_t *conf, OUT uint8_t *frame_buf, int buf_size);
-int	SmBus_WR_hig_limit(IN uint8_t chn, uint16_t *hig_limt, OUT uint8_t *frame_buf, int buf_size);
-int	SmBus_WR_low_limit(IN uint8_t chn, uint16_t *low_limt, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_WR_hig_limit(IN uint8_t chn, int16_t *hig_limt, OUT uint8_t *frame_buf, int buf_size);
+int	SmBus_WR_low_limit(IN uint8_t chn, int16_t *low_limt, OUT uint8_t *frame_buf, int buf_size);
 int	SmBus_RD_hig_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 int	SmBus_RD_low_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size);
 #endif

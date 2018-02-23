@@ -163,8 +163,12 @@ int SmBus_AI_config(IN uint8_t chn, SmBus_conf_t *conf, OUT uint8_t *frame_buf, 
 	SmBus_Tail(sb_xor, s_tail);
 	return 17;
 }
-
-int	SmBus_WR_hig_limit(IN uint8_t chn, uint16_t *hig_limie, OUT uint8_t *frame_buf, int buf_size)
+int	SmBus_WR_low_limit(IN uint8_t chn, int16_t *low_limie, OUT uint8_t *frame_buf, int buf_size)
+{
+		
+	return SmBus_Write(chn, 0x78,2, (uint8_t *)low_limie, frame_buf, buf_size);
+}
+int	SmBus_WR_hig_limit(IN uint8_t chn, int16_t *hig_limie, OUT uint8_t *frame_buf, int buf_size)
 {
 		
 	return SmBus_Write(chn, 0x6e,2, (uint8_t *)hig_limie, frame_buf, buf_size);
@@ -185,11 +189,7 @@ int	SmBus_Read_DO(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
 	return SmBus_Read(0x51, 0x6b, 1, frame_buf, buf_size);
 }
 
-int	SmBus_WR_low_limit(IN uint8_t chn, uint16_t *low_limie, OUT uint8_t *frame_buf, int buf_size)
-{
-		
-	return SmBus_Write(chn, 0x78,2, (uint8_t *)low_limie, frame_buf, buf_size);
-}
+
 
 int	SmBus_RD_hig_limit(IN uint8_t chn, OUT uint8_t *frame_buf, int buf_size)
 {
