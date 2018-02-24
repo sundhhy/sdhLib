@@ -43,7 +43,7 @@ typedef int err_t;
 #define ERR_CMM_ADDR_ERR					-0x803
 
 //文件系统类
-#define ERR_FS_OPEN_FAIL				-0x800
+#define ERR_FS_OPEN_FAIL				-0x900
 //以下的错误代码不要再使用了 170714
 #define ERR_MEM_UNAVAILABLE			-6					/* ??????			*/
 
