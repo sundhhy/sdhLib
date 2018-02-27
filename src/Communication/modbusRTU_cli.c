@@ -132,8 +132,18 @@ uint16_t MBC_Decode_pkt(uint8_t *command_buf, int cmd_len, uint8_t *ack_buf, int
 					break;
 				}
 							
+				
+				
+				if( ackbuf_len < (regNum*2  + 5))
+				{
+					
+					err= MB_ADDR_ERR;	
+					break;
+				}
+				
 				ack_buf[2] = regNum*2;
 				ack_num = 3;
+					
 				for(i=0; i<regNum; i++)
 				{
 					data = *p_ram_u16 ++;
@@ -152,19 +162,27 @@ uint16_t MBC_Decode_pkt(uint8_t *command_buf, int cmd_len, uint8_t *ack_buf, int
 			case READ_HOLD:	
 																					//regNum=127;	  ??????
 				
-				ret = MBC_reg_2_ram(startReg, regNum, READ_HOLD, &p_ram_u16);																	//regNum=127;	  ??????
-//				if((startReg >= HOLD_SIZE) || (regNum >= 125) || ((startReg + regNum) > HOLD_SIZE) ) 
+				ret = MBC_reg_2_ram(startReg, regNum, READ_HOLD, NULL);																	//regNum=127;	  ??????
 				if(ret != RET_OK)
 				{
 					err = MB_ADDR_ERR;	
 					break;
 				}
 							
+				
+				if( ackbuf_len < (regNum*2  + 5))
+				{
+					
+					err= MB_ADDR_ERR;	
+					break;
+				}
 				ack_buf[2] = regNum*2;
 				ack_num = 3;
 				for(i=0; i<regNum; i++)
 				{
-					data = *p_ram_u16 ++;	
+					
+					ret = MBC_reg_2_ram(startReg, 1, READ_HOLD, &p_ram_u16);
+					data = *p_ram_u16;	
 			#ifdef CPU_LITTLE_END
 					data = Little_end_to_Big_end( data);
 			#endif
@@ -174,6 +192,7 @@ uint16_t MBC_Decode_pkt(uint8_t *command_buf, int cmd_len, uint8_t *ack_buf, int
 					ack_num++; 
 					ack_buf[ack_num] = data >>8;				
 					ack_num++;	
+					startReg ++;
 				}
 				break;
 			/*Ð´ÊäÈë¼Ä´æÆ÷ 4Çø£¬±£³Ö¼Ä´æÆ÷------------------------------------------------------------------*/
